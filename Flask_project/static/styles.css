@@ -1,0 +1,345 @@
+body {
+    font-family: Arial, sans-serif;
+    background: url('../static/images/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    margin-bottom: 40px; /* Добавляем нижний отступ */
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.8); /* Добавляем фон для навигационной панели */
+    border-radius: 5px; /* Немного скругляем углы */
+    padding: 10px; /* Добавляем внутренние отступы */
+    display: flex;
+    justify-content: space-around; /* Распределяем элементы по горизонтали */
+    margin-bottom: 20px; /* Добавляем нижний отступ */
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px; /* Добавляем внутренние отступы к ссылкам */
+    border-radius: 5px; /* Скругляем углы ссылок */
+}
+
+nav ul li a:hover {
+    background: #ddd; /* Добавляем эффект при наведении */
+}
+
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 60px; /* Увеличиваем нижний отступ для блока продуктов */
+}
+
+.product-card {
+    background: white;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    width: calc(33% - 40px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 400px;
+}
+
+.product-card img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.cart-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.quantity-controls button {
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.quantity-controls .go-to-cart {
+    width: auto;
+    background-color: #28a745;
+    margin-left: 10px;
+}
+
+.quantity-controls span {
+    margin: 0 10px;
+    font-size: 1.2em;
+}
+
+.product-details img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.product-details {
+    background: white;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+h2 {
+    margin-top: 40px; /* Добавляем верхний отступ для заголовков */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cart-item img.cart-item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-right: 10px;
+}
+
+.cart-item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-item-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.cart-item-description {
+    margin-bottom: 5px;
+}
+
+.cart-item-price {
+    margin-bottom: 5px;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100px; /* Обеспечивает, что кнопки + и - будут расположены по краям */
+}
+
+.cart-item-controls button {
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.cart-item-controls span {
+    margin: 0 10px;
+    font-size: 1.2em;
+}
+
+.info-block {
+    background: white; /* Устанавливаем белый фон для блока с информацией */
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 60px; /* Добавляем нижний отступ */
+}
+
+.contact-info {
+    margin-top: 20px; /* Уменьшаем отступ сверху */
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+}
+
+.contact-info p, .contact-info ul {
+    margin: 10px 0;
+}
+
+.contact-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-info ul li {
+    margin: 5px 0;
+}
+
+.contact-info a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.contact-title {
+    margin-top: 40px;
+    margin-bottom: 10px; /* Уменьшаем нижний отступ */
+}
+
+.cart-actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Новые стили для таблицы пользователей */
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.user-table th, .user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.user-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.user-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.user-table tr:hover {
+    background-color: #ddd;
+}
+
+/* Стили для форм регистрации и входа */
+.form-container {
+    max-width: 400px;
+    margin: 100px auto; /* Центрирование формы по вертикали и горизонтали */
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.form-container input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.form-container button:hover {
+    background-color: #218838;
+}
+
+/* Стили для сообщения об успешном изменении профиля и кнопки "Назад" */
+
+.alert {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+
+.back-button svg {
+    margin-right: 5px;
+}
+
+/* Стили для иконки отображения/скрытия пароля */
+.show-password {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%; /* Выравниваем по центру */
+    transform: translateY(-50%); /* Центруем вертикально */
+    width: 20px;
+    height: 20px;
+}

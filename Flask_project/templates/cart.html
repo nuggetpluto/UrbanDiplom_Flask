@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Корзина</h1>
+<div id="cart-contents"></div>
+<div class="cart-actions">
+    <button onclick="window.location.href='/'">К покупкам</button>
+</div>
+<script>
+    function getProductDetails(productName) {
+        const products = {{ products | tojson }};
+        return products.find(product => product.name === productName);
+    }
+
+    function updateCartDisplay() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        let cartContents = document.getElementById('cart-contents');
+        cartContents.innerHTML = '';
+        for (let productName in cart) {
+            let quantity = cart[productName];
+            let product = getProductDetails(productName);
+            let itemDiv = document.createElement('div');
+            itemDiv.innerHTML = `
+                <div class="cart-item">
+                    <img src="${product.image}" alt="${product.name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <span class="cart-item-name">${product.name}</span>
+                        <span class="cart-item-description">${product.description}</span>
+                        <span class="cart-item-price">${product.price}</span>
+                        <div class="cart-item-controls">
+                            <button class="decrease-quantity" data-name="${productName}">-</button>
+                            <span class="quantity">${quantity}</span>
+                            <button class="increase-quantity" data-name="${productName}">+</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            cartContents.appendChild(itemDiv);
+        }
+        if (Object.keys(cart).length === 0) {
+            cartContents.innerText = 'Ваша корзина пуста.';
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('increase-quantity')) {
+            const productName = event.target.dataset.name;
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            cart[productName] = (cart[productName] || 0) + 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+        } else if (event.target.classList.contains('decrease-quantity')) {
+            const productName = event.target.dataset.name;
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            if (cart[productName] > 1) {
+                cart[productName] -= 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+            } else {
+                delete cart[productName];
+                localStorage.setItem('cart', JSON.stringify(cart));
+            }
+            updateCartDisplay();
+        }
+    });
+
+    updateCartDisplay();
+</script>
+{% endblock %}

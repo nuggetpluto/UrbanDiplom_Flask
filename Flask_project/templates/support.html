@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Поддержка</h1>
+<div class="chat-container">
+    <div id="chat-box" class="chat-box"></div>
+    <input type="text" id="chat-input" class="chat-input" placeholder="Введите ваше сообщение...">
+    <button id="send-button" class="send-button">Отправить</button>
+</div>
+<script>
+    document.getElementById('send-button').addEventListener('click', function() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        if (message) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.innerText = message;
+            chatBox.appendChild(messageDiv);
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+
+    document.getElementById('chat-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('send-button').click();
+        }
+    });
+</script>
+<style>
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chat-box {
+        width: 100%;
+        height: 300px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    .chat-input {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .send-button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .send-button:hover {
+        background-color: #0056b3;
+    }
+
+    .message {
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="product-details">
+    <img src="{{ url_for('static', filename=product.image.split('static/')[1]) }}" alt="{{ product.name }}">
+    <h2>{{ product.name }}</h2>
+    <p>{{ product.description }}</p>
+    {% if product.characteristics %}
+    <h3>Характеристики:</h3>
+    <ul>
+        {% for value in product.characteristics.values() %}
+        <li>{{ value }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <p>{{ product.price }}</p>
+    <div class="cart-controls">
+        <button id="add-to-cart" data-name="{{ product.name }}">Добавить в корзину</button>
+        <div id="quantity-controls" class="quantity-controls" style="display: none;">
+            <button id="decrease-quantity" class="decrease-quantity" data-name="{{ product.name }}">-</button>
+            <span id="quantity" class="quantity">1</span>
+            <button id="increase-quantity" class="increase-quantity" data-name="{{ product.name }}">+</button>
+            <button class="go-to-cart" onclick="window.location.href='/cart'">К корзине</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('add-to-cart').addEventListener('click', function() {
+        const productName = this.dataset.name;
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        cart[productName] = (cart[productName] || 0) + 1;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.getElementById('quantity').innerText = cart[productName];
+        document.getElementById('quantity-controls').style.display = 'flex';
+        this.style.display = 'none';
+    });
+
+    document.getElementById('increase-quantity').addEventListener('click', function() {
+        const productName = document.getElementById('add-to-cart').dataset.name;
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        cart[productName] = (cart[productName] || 0) + 1;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        document.getElementById('quantity').innerText = cart[productName];
+    });
+
+    document.getElementById('decrease-quantity').addEventListener('click', function() {
+        const productName = document.getElementById('add-to-cart').dataset.name;
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        if (cart[productName] > 1) {
+            cart[productName] -= 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById('quantity').innerText = cart[productName];
+        } else {
+            delete cart[productName];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById('quantity-controls').style.display = 'none';
+            document.getElementById('add-to-cart').style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

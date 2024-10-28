@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="info-block">
+    <h1>Добро пожаловать на наш сайт!</h1>
+    <p>Добро пожаловать в наш интернет-магазин! Мы рады видеть вас у нас и предлагаем широкий ассортимент товаров, которые удовлетворят любые ваши потребности. Будь то новинки в мире электроники, стильная одежда, косметика или товары для дома - у нас вы найдете все, что нужно.</p>
+    <p>Покупать у нас легко и удобно, а наша дружелюбная команда всегда готова помочь вам с выбором и ответить на все ваши вопросы. Приятных покупок!</p>
+
+    <h2>Информация о компании</h2>
+    <p>Наша компания специализируется на предоставлении высококачественных товаров для дома, электроники, одежды и многого другого. Мы стремимся предложить нашим клиентам лучший сервис и продукцию.</p>
+
+    <h2>История и опыт в сфере торговли</h2>
+    <p>Наша компания была основана более десяти лет назад, и с тех пор мы непрерывно развиваемся и совершенствуем наши методы работы. Мы гордимся нашим опытом и достижениями, которые позволяют нам оставаться лидером в отрасли.</p>
+
+    <h2>Сотрудничество с нами</h2>
+    <p>Мы всегда открыты для новых партнеров и готовы предложить выгодные условия сотрудничества. Наши партнеры ценят нас за надежность, прозрачность и взаимовыгодное сотрудничество.</p>
+
+    <h2>Преимущества выбора нашего магазина</h2>
+    <p>Выбирая наш магазин, вы получаете:
+    <ul>
+        <li>Высокое качество товаров</li>
+        <li>Широкий ассортимент продукции</li>
+        <li>Удобные условия доставки и оплаты</li>
+        <li>Профессиональное обслуживание и поддержку</li>
+    </ul>
+    </p>
+</div>
+
+<h2>Каталог товаров:</h2>
+<div class="products">
+    {% for product in products %}
+    <div class="product-card">
+        <a href="/product/{{ product.name|lower }}">
+            <img src="{{ product.image }}" alt="{{ product.name }}">
+            <h3>{{ product.name }}</h3>
+        </a>
+        <p>{{ product.price }}</p>
+        <div class="cart-controls">
+            <button class="add-to-cart" data-name="{{ product.name }}">Добавить в корзину</button>
+            <div class="quantity-controls" id="quantity-controls-{{ product.name }}" style="display: none;">
+                <button class="decrease-quantity" data-name="{{ product.name }}">-</button>
+                <span class="quantity" id="quantity-{{ product.name }}">1</span>
+                <button class="increase-quantity" data-name="{{ product.name }}">+</button>
+                <button class="go-to-cart" onclick="window.location.href='/cart'">К корзине</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2 class="contact-title">Контактная информация</h2>
+<div class="contact-info">
+    <p>Номер телефона бухгалтерии: +7 (123) 456-78-90</p>
+    <p>Следите за нами в социальных сетях:</p>
+    <ul>
+        <li><a href="https://www.facebook.com" target="_blank">Facebook</a></li>
+        <li><a href="https://www.instagram.com" target="_blank">Instagram</а></li>
+        <li><a href="https://www.twitter.com" target="_blank">Twitter</а></li>
+    </ul>
+    <p><a href="/support">Обратиться в поддержку</а></p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+        for (let productName in cart) {
+            const quantity = cart[productName];
+            document.getElementById(`quantity-${productName}`).innerText = quantity;
+            document.getElementById(`quantity-controls-${productName}`).style.display = 'flex';
+            document.querySelector(`button[data-name="${productName}"].add-to-cart`).style.display = 'none';
+        }
+    });
+
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const productName = this.dataset.name;
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            cart[productName] = (cart[productName] || 0) + 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById(`quantity-${productName}`).innerText = cart[productName];
+            document.getElementById(`quantity-controls-${productName}`).style.display = 'flex';
+            this.style.display = 'none';
+        });
+    });
+
+    document.querySelectorAll('.increase-quantity').forEach(button => {
+        button.addEventListener('click', function() {
+            const productName = this.dataset.name;
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            cart[productName] = (cart[productName] || 0) + 1;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById(`quantity-${productName}`).innerText = cart[productName];
+        });
+    });
+
+    document.querySelectorAll('.decrease-quantity').forEach(button => {
+        button.addEventListener('click', function() {
+            const productName = this.dataset.name;
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            if (cart[productName] > 1) {
+                cart[productName] -= 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                document.getElementById(`quantity-${productName}`).innerText = cart[productName];
+            } else {
+                delete cart[productName];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                document.getElementById(`quantity-controls-${productName}`).style.display = 'none';
+                document.querySelector(`button[data-name="${productName}"].add-to-cart`).style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}
