@@ -3,72 +3,23 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 from passlib.hash import sha256_crypt
 from flask_migrate import Migrate
+from models import User, Product, db
+from database import add_product, get_all_products, update_product, delete_product
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'killeu1501'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 
-# Модель пользователя
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-    email_confirmed = db.Column(db.Boolean, default=False)
-    reset_token = db.Column(db.String(100), nullable=True)
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
-
-
-# Продукты
-products = [
-    {
-        "name": "Ключик",
-        "description": "Это многофункциональный инструмент, который поможет вам в любых ремонтных работах.",
-        "price": "100 руб",
-        "image": "static/images/product1.jpg",
-        "characteristics": {
-            "material": "Высококачественная сталь",
-            "weight": "200 г",
-            "length": "15 см",
-            "features": "Противоскользящая рукоятка, компактный дизайн"
-        }
-    },
-    {
-        "name": "Бегемот",
-        "description": "Бегемоты — крупные травоядные млекопитающие, обитающие в водоемах и болотистых зонах Африки. Они являются одними из самых массивных сухопутных животных, взрослые особи могут достигать веса до нескольких тонн.",
-        "price": "200 руб",
-        "image": "static/images/product2.jpg",
-        "characteristics": {
-            "size_and_weight": "достигают веса до нескольких тонн",
-            "head": "массивная голова с широким ртом и острыми клыками для кусания травы и водных растений",
-            "skin": "тело покрыто толстой кожей, предотвращающей обезвоживание и защищающей от ультрафиолетовых лучей",
-            "buoyancy": "имеют невероятную плавучесть для передвижения в воде с легкостью"
-        }
-    },
-    {
-        "name": "Макбук",
-        "description": "Макбук — это стильный и мощный ноутбук от Apple, идеально подходящий для работы и развлечений.",
-        "price": "1000 руб",
-        "image": "static/images/product4.jpg",  # Убедитесь, что изображение доступно по этому пути
-        "characteristics": {
-            "processor": "Apple M1",
-            "ram": "8 ГБ",
-            "storage": "256 ГБ SSD"
-        }
-    },
-    # Другие товары...
-]
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -78,27 +29,24 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Проверяем, существует ли уже пользователь с таким же именем пользователя
         existing_user_by_username = User.query.filter_by(username=username).first()
         if existing_user_by_username:
             flash('Пользователь с таким именем уже существует. Пожалуйста, выберите другое имя.')
             return redirect(url_for('register'))
 
-        # Проверяем, существует ли уже пользователь с таким же email
         existing_user_by_email = User.query.filter_by(email=email).first()
         if existing_user_by_email:
             flash('Пользователь с таким email уже существует. Пожалуйста, используйте другой email.')
             return redirect(url_for('register'))
 
         hashed_password = sha256_crypt.hash(password)
-
         new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
         login_user(new_user)
-        flash('Регистрация успешна!')  # Добавлено сообщение о успешной регистрации
-        return redirect(url_for('home'))  # Перенаправление на главную страницу
+        flash('Регистрация успешна!')
+        return redirect(url_for('home'))
 
     return render_template('register.html')
 
@@ -149,7 +97,7 @@ def profile():
 
         if changes:
             message = 'Профиль успешно изменен: ' + ', '.join(changes)
-            flash('Ваш профиль был успешно обновлён.')  # Новое сообщение о обновлении профиля
+            flash('Ваш профиль был успешно обновлён.')
         else:
             message = 'Профиль не был изменен.'
 
@@ -162,15 +110,17 @@ def profile():
 @app.route('/')
 @login_required
 def home():
+    products = get_all_products()  # Получаем список продуктов
     return render_template('index.html', products=products, title="Магазин")
 
 
 @app.route('/product/<name>')
 @login_required
 def product(name):
+    products = get_all_products()
     for prod in products:
-        if prod['name'].lower() == name.lower():
-            return render_template('product.html', product=prod, title=prod['name'])
+        if prod.name.lower() == name.lower():
+            return render_template('product.html', product=prod, title=prod.name)
     return render_template('product.html', title='Товар не найден')
 
 
@@ -183,7 +133,22 @@ def about():
 @app.route('/cart')
 @login_required
 def cart():
-    return render_template('cart.html', products=products, title="Корзина")
+    # Получаем все продукты
+    products = get_all_products() or []
+
+    # Преобразуем объекты Product в словари
+    products_serializable = [
+        {
+            'id': product.id,
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'image': product.image
+        }
+        for product in products
+    ]
+
+    return render_template('cart.html', title="Корзина", products=products_serializable)
 
 
 @app.route('/contact')
@@ -206,61 +171,23 @@ def get_data():
     return jsonify(response)
 
 
-@app.route('/admin/users')
-@login_required
-def view_users():
-    if current_user.is_authenticated and current_user.username == 'admin':  # простой пример проверки на администратора
-        users = User.query.all()
-        return render_template('view_users.html', users=users)
-    else:
-        flash('Access denied.')
-        return redirect(url_for('home'))
-
-
-@app.route('/confirm/<token>')
-def confirm_email(token):
-    user = User.query.filter_by(reset_token=token).first()
-    if user:
-        user.email_confirmed = True
-        user.reset_token = None
-        db.session.commit()
-        flash('Email confirmed successfully')
-        return redirect(url_for('login'))
-    else:
-        flash('Invalid or expired token')
-        return redirect(url_for('home'))
-
-
-@app.route('/reset', methods=['GET', 'POST'])
-def reset_request():
+@app.route('/add_product', methods=['GET', 'POST'])
+def add_product():
     if request.method == 'POST':
-        email = request.form.get('email')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            token = sha256_crypt.hash(email)
-            user.reset_token = token
-            db.session.commit()
-            flash('Password reset request processed')  # Замените на любой текст, который хотите
-            return redirect(url_for('login'))
-    return render_template('reset_request.html')
+        name = request.form.get('name')
+        description = request.form.get('description')
+        price = float(request.form.get('price'))
+        image = request.form.get('image')
 
-
-@app.route('/reset/<token>', methods=['GET', 'POST'])
-def reset_token(token):
-    user = User.query.filter_by(reset_token=token).first()
-    if not user:
-        flash('Invalid or expired token')
-        return redirect(url_for('home'))
-
-    if request.method == 'POST':
-        password = request.form.get('password')
-        user.password = sha256_crypt.hash(password)
-        user.reset_token = None
+        # Создание и добавление нового продукта в базу данных
+        new_product = Product(name=name, description=description, price=price, image=image)
+        db.session.add(new_product)
         db.session.commit()
-        flash('Password reset successfully')
-        return redirect(url_for('login'))
 
-    return render_template('reset_token.html')
+        flash('Продукт успешно добавлен!')
+        return redirect(url_for('home'))  # Перенаправление на главную страницу
+
+    return render_template('add_product.html')  # Показать форму при GET-запросе
 
 
 if __name__ == '__main__':

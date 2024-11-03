@@ -7,7 +7,7 @@
 </div>
 <script>
     function getProductDetails(productName) {
-        const products = {{ products | tojson }};
+       const products = {{ products | tojson }};  // Преобразуем products в JSON
         return products.find(product => product.name === productName);
     }
 
@@ -18,6 +18,7 @@
         for (let productName in cart) {
             let quantity = cart[productName];
             let product = getProductDetails(productName);
+            if (!product) continue;  // Пропускаем, если продукт не найден
             let itemDiv = document.createElement('div');
             itemDiv.innerHTML = `
                 <div class="cart-item">
