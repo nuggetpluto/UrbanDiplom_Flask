@@ -9,19 +9,20 @@
 <body>
     <nav>
         <ul>
-            <li><a href="{{ url_for('home') }}">Главная</a></li>
-            <li><a href="{{ url_for('about') }}">О нас</a></li>
-            <li><a href="{{ url_for('cart') }}">Корзина</a></li>
-            <li><a href="{{ url_for('contact') }}">Контакты</a></li>
-            <li><a href="{{ url_for('support') }}">Поддержка</a></li>
-            {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('profile') }}">Личный кабинет</a></li>
-                <li><a href="{{ url_for('logout') }}">Выйти</a></li>
-            {% else %}
-                <li><a href="{{ url_for('login') }}">Войти</a></li>
-                <li><a href="{{ url_for('register') }}">Регистрация</a></li>
-            {% endif %}
-        </ul>
+    <li><a href="{{ url_for('product.home') }}">Главная</a></li>
+    <li><a href="{{ url_for('misc.about') }}">О нас</a></li>
+    <li><a href="{{ url_for('misc.cart') }}">Корзина</a></li>
+    <li><a href="{{ url_for('misc.contact') }}">Контакты</a></li>
+    <li><a href="{{ url_for('misc.support') }}">Поддержка</a></li>
+    {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('profile.profile') }}">Личный кабинет</a></li>
+        <li><a href="{{ url_for('auth.logout') }}">Выйти</a></li>
+    {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Войти</a></li>
+        <li><a href="{{ url_for('auth.register') }}">Регистрация</a></li>
+    {% endif %}
+</ul>
+
     </nav>
     <div class="container">
         <!-- Отображение flash-сообщений -->

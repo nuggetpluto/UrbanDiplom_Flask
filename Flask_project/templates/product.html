@@ -19,7 +19,7 @@
             <button id="decrease-quantity" class="decrease-quantity" data-name="{{ product.name }}">-</button>
             <span id="quantity" class="quantity">1</span>
             <button id="increase-quantity" class="increase-quantity" data-name="{{ product.name }}">+</button>
-            <button class="go-to-cart" onclick="window.location.href='/cart'">К корзине</button>
+           <button class="go-to-cart" onclick="window.location.href='{{ url_for('misc.cart') }}'">К корзине</button>
         </div>
     </div>
 </div>

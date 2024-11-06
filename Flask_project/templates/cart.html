@@ -3,11 +3,13 @@
 <h1>Корзина</h1>
 <div id="cart-contents"></div>
 <div class="cart-actions">
-    <button onclick="window.location.href='/'">К покупкам</button>
+    <button onclick="window.location.href='{{ url_for('product.home') }}'">К покупкам</button>
+    <button id="checkout-button">Оформить заказ</button>
 </div>
+<h3>Итоговая цена: <span id="total-price">0</span> руб.</h3>
 <script>
     function getProductDetails(productName) {
-       const products = {{ products | tojson }};  // Преобразуем products в JSON
+       const products = {{ products|default([]) | tojson }};  // Преобразуем products в JSON и добавляем default([])
         return products.find(product => product.name === productName);
     }
 
@@ -15,10 +17,15 @@
         let cart = JSON.parse(localStorage.getItem('cart')) || {};
         let cartContents = document.getElementById('cart-contents');
         cartContents.innerHTML = '';
+        let totalPrice = 0;
+
         for (let productName in cart) {
             let quantity = cart[productName];
             let product = getProductDetails(productName);
             if (!product) continue;  // Пропускаем, если продукт не найден
+
+            totalPrice += product.price * quantity;  // Считаем итоговую цену
+
             let itemDiv = document.createElement('div');
             itemDiv.innerHTML = `
                 <div class="cart-item">
@@ -26,7 +33,7 @@
                     <div class="cart-item-details">
                         <span class="cart-item-name">${product.name}</span>
                         <span class="cart-item-description">${product.description}</span>
-                        <span class="cart-item-price">${product.price}</span>
+                        <span class="cart-item-price">${product.price} руб.</span>
                         <div class="cart-item-controls">
                             <button class="decrease-quantity" data-name="${productName}">-</button>
                             <span class="quantity">${quantity}</span>
@@ -37,6 +44,9 @@
             `;
             cartContents.appendChild(itemDiv);
         }
+
+        document.getElementById('total-price').innerText = totalPrice.toFixed(2);  // Обновляем итоговую цену
+
         if (Object.keys(cart).length === 0) {
             cartContents.innerText = 'Ваша корзина пуста.';
         }
@@ -61,6 +71,11 @@
             }
             updateCartDisplay();
         }
+    });
+
+    document.getElementById('checkout-button').addEventListener('click', function() {
+        const cart = localStorage.getItem('cart');
+        window.location.href = '{{ url_for("product.checkout") }}' + '?cart=' + encodeURIComponent(cart);
     });
 
     updateCartDisplay();
