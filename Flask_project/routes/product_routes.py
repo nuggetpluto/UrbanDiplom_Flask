@@ -4,7 +4,6 @@ from database import get_all_products
 from models import Product, db
 
 product_bp = Blueprint('product', __name__)
-product_bp = Blueprint('product', __name__)
 
 
 @product_bp.route('/')
@@ -62,3 +61,9 @@ def checkout():
 @login_required
 def order_confirmation():
     return render_template('order_confirmation.html')
+
+
+@product_bp.route('/product/<int:product_id>', methods=['GET'])
+def product_detail(product_id):
+    product = Product.query.get_or_404(product_id)
+    return render_template('product.html', product=product, title=product.name)
